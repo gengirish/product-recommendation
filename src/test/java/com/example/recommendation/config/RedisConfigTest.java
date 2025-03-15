@@ -15,13 +15,17 @@ class RedisConfigTest {
 
     private AnnotationConfigApplicationContext context;
 
+    /**
+     * Sets up the application context before each test.
+     */
     @BeforeEach
     void setUp() {
         context = new AnnotationConfigApplicationContext(RedisConfig.class);
     }
 
     /**
-     * Test for the redisConnectionFactory bean.
+     * Tests the redisConnectionFactory bean.
+     * Verifies that the redisConnectionFactory bean is not null.
      */
     @Test
     void testRedisConnectionFactory() {
@@ -30,7 +34,8 @@ class RedisConfigTest {
     }
 
     /**
-     * Test for the redisTemplate bean.
+     * Tests the redisTemplate bean.
+     * Verifies that the redisTemplate bean is not null.
      */
     @Test
     void testRedisTemplate() {

@@ -1,6 +1,8 @@
 package com.example.recommendation.config;
 
+import org.springframework.cache.CacheManager;
 import org.springframework.cache.annotation.EnableCaching;
+import org.springframework.cache.concurrent.ConcurrentMapCacheManager;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.data.redis.connection.RedisConnectionFactory;
@@ -34,5 +36,15 @@ public class RedisConfig {
         RedisTemplate<String, Object> template = new RedisTemplate<>();
         template.setConnectionFactory(redisConnectionFactory());
         return template;
+    }
+
+    /**
+     * Creates a CacheManager bean for managing cache.
+     *
+     * @return the CacheManager bean
+     */
+    @Bean
+    public CacheManager cacheManager() {
+        return new ConcurrentMapCacheManager("cacheName");
     }
 }

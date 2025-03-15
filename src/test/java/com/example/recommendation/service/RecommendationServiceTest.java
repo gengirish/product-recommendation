@@ -12,6 +12,7 @@ import org.slf4j.LoggerFactory;
 import org.tensorflow.SavedModelBundle;
 import org.tensorflow.Session;
 import org.tensorflow.Tensor;
+import org.tensorflow.TensorFlowException;
 
 import java.util.Collections;
 import java.util.List;
@@ -46,6 +47,28 @@ public class RecommendationServiceTest {
     public void setUp() {
         lenient().when(model.session()).thenReturn(session);
         lenient().when(session.runner()).thenReturn(runner);
+    }
+
+    @Test
+    public void testLoadModel_Success() {
+        String modelPath = "path/to/model";
+        doNothing().when(logger).info(anyString(), anyString());
+
+        recommendationService.loadModel(modelPath);
+
+        assertNotNull(recommendationService.model);
+        verify(logger, times(1)).info("TensorFlow model loaded successfully from {}", modelPath);
+    }
+
+    @Test
+    public void testLoadModel_Failure() {
+        String modelPath = "invalid/path";
+        when(SavedModelBundle.load(modelPath, "serve")).thenThrow(new RuntimeException("Failed to load model"));
+        doNothing().when(logger).error(anyString(), any(Throwable.class));
+        recommendationService.loadModel(modelPath);
+
+        assertNull(recommendationService.model);
+        verify(logger, times(1)).error("Failed to load TensorFlow model", any(TensorFlowException.class));
     }
 
     @Test

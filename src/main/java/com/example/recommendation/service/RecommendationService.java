@@ -23,7 +23,7 @@ public class RecommendationService {
     @Autowired
     private ProductService productService;
 
-    private SavedModelBundle model;
+    SavedModelBundle model;
 
     public void loadModel(String modelPath) {
         try {
