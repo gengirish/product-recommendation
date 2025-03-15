@@ -1,6 +1,7 @@
 package com.example.recommendation;
 
 import com.example.recommendation.service.RecommendationService;
+import jakarta.annotation.PostConstruct;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -9,12 +10,11 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.Profile;
 import org.springframework.kafka.annotation.EnableKafka;
 
-import javax.annotation.PostConstruct;
-
 @SpringBootApplication
 @EnableKafka
 public class SpringBootRecommendationApplication {
     private static final Logger logger = LoggerFactory.getLogger(SpringBootRecommendationApplication.class);
+
     @Autowired
     private RecommendationService recommendationService;
 
