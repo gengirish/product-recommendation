@@ -9,6 +9,7 @@ import org.springframework.stereotype.Service;
 import org.tensorflow.SavedModelBundle;
 import org.tensorflow.Session;
 import org.tensorflow.Tensor;
+import org.tensorflow.TensorFlowException;
 
 import java.util.List;
 
@@ -24,11 +25,11 @@ public class RecommendationService {
 
     private SavedModelBundle model;
 
-    public RecommendationService() {
+    public void loadModel(String modelPath) {
         try {
-            this.model = SavedModelBundle.load("ml_model", "serve");
-            logger.info("TensorFlow model loaded successfully.");
-        } catch (Exception e) {
+            model = SavedModelBundle.load(modelPath, "serve");
+            logger.info("TensorFlow model loaded successfully from {}", modelPath);
+        } catch (TensorFlowException e) {
             logger.error("Failed to load TensorFlow model", e);
         }
     }

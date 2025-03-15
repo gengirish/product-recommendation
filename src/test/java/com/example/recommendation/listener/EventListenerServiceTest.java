@@ -11,8 +11,6 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import java.util.List;
 
@@ -36,12 +34,10 @@ public class EventListenerServiceTest {
     @InjectMocks
     private EventListenerService eventListenerService;
 
-    private static final Logger logger = LoggerFactory.getLogger(EventListenerServiceTest.class);
-
     @BeforeEach
     void setUp() {
         // Initialize the ObjectMapper mock
-        eventListenerService = new EventListenerService();
+        eventListenerService = new EventListenerService(recommendationService, objectMapper);
     }
 
     /**
@@ -56,13 +52,16 @@ public class EventListenerServiceTest {
         ConsumerRecord<String, String> record = new ConsumerRecord<>("user-activity-events", 0, 0, "key", eventData);
 
         JsonNode eventJson = mock(JsonNode.class);
+        JsonNode userIdNode = mock(JsonNode.class);
+        JsonNode eventTypeNode = mock(JsonNode.class);
+        JsonNode productIdNode = mock(JsonNode.class);
         when(objectMapper.readTree(eventData)).thenReturn(eventJson);
-        when(eventJson.get("userId")).thenReturn(mock(JsonNode.class));
-        when(eventJson.get("userId").asLong()).thenReturn(1L);
-        when(eventJson.get("eventType")).thenReturn(mock(JsonNode.class));
-        when(eventJson.get("eventType").asText()).thenReturn("USER_CLICKED_PRODUCT");
-        when(eventJson.get("productId")).thenReturn(mock(JsonNode.class));
-        when(eventJson.get("productId").asLong()).thenReturn(101L);
+        when(eventJson.get("userId")).thenReturn(userIdNode);
+        when(eventJson.get("eventType")).thenReturn(eventTypeNode);
+        when(eventJson.get("productId")).thenReturn(productIdNode);
+        when(userIdNode.asLong()).thenReturn(1L);
+        when(eventTypeNode.asText()).thenReturn("USER_CLICKED_PRODUCT");
+        when(productIdNode.asLong()).thenReturn(101L);
 
         // Act
         eventListenerService.handleUserActivity(record);
@@ -83,13 +82,16 @@ public class EventListenerServiceTest {
         ConsumerRecord<String, String> record = new ConsumerRecord<>("user-activity-events", 0, 0, "key", eventData);
 
         JsonNode eventJson = mock(JsonNode.class);
+        JsonNode userIdNode = mock(JsonNode.class);
+        JsonNode eventTypeNode = mock(JsonNode.class);
+        JsonNode productIdNode = mock(JsonNode.class);
         when(objectMapper.readTree(eventData)).thenReturn(eventJson);
-        when(eventJson.get("userId")).thenReturn(mock(JsonNode.class));
-        when(eventJson.get("userId").asLong()).thenReturn(2L);
-        when(eventJson.get("eventType")).thenReturn(mock(JsonNode.class));
-        when(eventJson.get("eventType").asText()).thenReturn("USER_BOUGHT_PRODUCT");
-        when(eventJson.get("productId")).thenReturn(mock(JsonNode.class));
-        when(eventJson.get("productId").asLong()).thenReturn(202L);
+        when(eventJson.get("userId")).thenReturn(userIdNode);
+        when(eventJson.get("eventType")).thenReturn(eventTypeNode);
+        when(eventJson.get("productId")).thenReturn(productIdNode);
+        when(userIdNode.asLong()).thenReturn(2L);
+        when(eventTypeNode.asText()).thenReturn("USER_BOUGHT_PRODUCT");
+        when(productIdNode.asLong()).thenReturn(202L);
 
         // Act
         eventListenerService.handleUserActivity(record);
@@ -110,13 +112,16 @@ public class EventListenerServiceTest {
         ConsumerRecord<String, String> record = new ConsumerRecord<>("user-activity-events", 0, 0, "key", eventData);
 
         JsonNode eventJson = mock(JsonNode.class);
+        JsonNode userIdNode = mock(JsonNode.class);
+        JsonNode eventTypeNode = mock(JsonNode.class);
+        JsonNode categoryNode = mock(JsonNode.class);
         when(objectMapper.readTree(eventData)).thenReturn(eventJson);
-        when(eventJson.get("userId")).thenReturn(mock(JsonNode.class));
-        when(eventJson.get("userId").asLong()).thenReturn(3L);
-        when(eventJson.get("eventType")).thenReturn(mock(JsonNode.class));
-        when(eventJson.get("eventType").asText()).thenReturn("USER_SEARCHED_CATEGORY");
-        when(eventJson.get("category")).thenReturn(mock(JsonNode.class));
-        when(eventJson.get("category").asText()).thenReturn("electronics");
+        when(eventJson.get("userId")).thenReturn(userIdNode);
+        when(eventJson.get("eventType")).thenReturn(eventTypeNode);
+        when(eventJson.get("category")).thenReturn(categoryNode);
+        when(userIdNode.asLong()).thenReturn(3L);
+        when(eventTypeNode.asText()).thenReturn("USER_SEARCHED_CATEGORY");
+        when(categoryNode.asText()).thenReturn("electronics");
 
         // Act
         eventListenerService.handleUserActivity(record);
@@ -137,13 +142,16 @@ public class EventListenerServiceTest {
         ConsumerRecord<String, String> record = new ConsumerRecord<>("user-activity-events", 0, 0, "key", eventData);
 
         JsonNode eventJson = mock(JsonNode.class);
+        JsonNode userIdNode = mock(JsonNode.class);
+        JsonNode eventTypeNode = mock(JsonNode.class);
+        JsonNode productIdNode = mock(JsonNode.class);
         when(objectMapper.readTree(eventData)).thenReturn(eventJson);
-        when(eventJson.get("userId")).thenReturn(mock(JsonNode.class));
-        when(eventJson.get("userId").asLong()).thenReturn(4L);
-        when(eventJson.get("eventType")).thenReturn(mock(JsonNode.class));
-        when(eventJson.get("eventType").asText()).thenReturn("UNKNOWN_EVENT");
-        when(eventJson.get("productId")).thenReturn(mock(JsonNode.class));
-        when(eventJson.get("productId").asLong()).thenReturn(404L);
+        when(eventJson.get("userId")).thenReturn(userIdNode);
+        when(eventJson.get("eventType")).thenReturn(eventTypeNode);
+        when(eventJson.get("productId")).thenReturn(productIdNode);
+        when(userIdNode.asLong()).thenReturn(4L);
+        when(eventTypeNode.asText()).thenReturn("UNKNOWN_EVENT");
+        when(productIdNode.asLong()).thenReturn(404L);
 
         // Act
         eventListenerService.handleUserActivity(record);

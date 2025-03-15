@@ -36,13 +36,16 @@ public class RecommendationServiceTest {
 
     private static final Logger logger = LoggerFactory.getLogger(RecommendationServiceTest.class);
 
+    @Mock
     private Session session;
+
+    @Mock
+    private Session.Runner runner;
 
     @BeforeEach
     public void setUp() {
-        // Create a real instance of Session
-        session = mock(Session.class);
-        when(model.session()).thenReturn(session);
+        lenient().when(model.session()).thenReturn(session);
+        lenient().when(session.runner()).thenReturn(runner);
     }
 
     @Test
@@ -57,9 +60,9 @@ public class RecommendationServiceTest {
         );
 
         when(userBehaviorService.fetchUserActivity(userId)).thenReturn(viewedProducts);
-        when(session.runner().feed(anyString(), any(Tensor.class))).thenReturn(session.runner());
-        when(session.runner().fetch(anyString())).thenReturn(session.runner());
-        when(session.runner().run()).thenReturn(List.of(Tensor.create(recommendedProductIds, Long.class)));
+        when(runner.feed(anyString(), any(Tensor.class))).thenReturn(runner);
+        when(runner.fetch(anyString())).thenReturn(runner);
+        when(runner.run()).thenReturn(List.of(Tensor.create(recommendedProductIds, Long.class)));
         when(productService.getProductsByIds(recommendedProductIds)).thenReturn(recommendedProducts);
 
         List<Product> recommendations = recommendationService.getRecommendations(userId);
@@ -68,7 +71,7 @@ public class RecommendationServiceTest {
         assertEquals(3, recommendations.size());
         assertEquals(recommendedProducts, recommendations);
         verify(userBehaviorService, times(1)).fetchUserActivity(userId);
-        verify(session.runner(), times(1)).run();
+        verify(runner, times(1)).run();
     }
 
     @Test
@@ -97,16 +100,16 @@ public class RecommendationServiceTest {
         List<Long> viewedProducts = List.of(101L, 102L, 103L);
 
         when(userBehaviorService.fetchUserActivity(userId)).thenReturn(viewedProducts);
-        when(session.runner().feed(anyString(), any(Tensor.class))).thenReturn(session.runner());
-        when(session.runner().fetch(anyString())).thenReturn(session.runner());
-        when(session.runner().run()).thenThrow(new RuntimeException("Model failure"));
+        when(runner.feed(anyString(), any(Tensor.class))).thenReturn(runner);
+        when(runner.fetch(anyString())).thenReturn(runner);
+        when(runner.run()).thenThrow(new RuntimeException("Model failure"));
 
         List<Product> recommendations = recommendationService.getRecommendations(userId);
 
         assertNotNull(recommendations);
         assertTrue(recommendations.isEmpty());
         verify(userBehaviorService, times(1)).fetchUserActivity(userId);
-        verify(session.runner(), times(1)).run();
+        verify(runner, times(1)).run();
     }
 
     @Test
@@ -121,22 +124,22 @@ public class RecommendationServiceTest {
 
     @Test
     public void testTrainRecommendationModel_Success() {
-        when(session.runner().addTarget(anyString())).thenReturn(session.runner());
+        when(runner.addTarget(anyString())).thenReturn(runner);
 
         recommendationService.trainRecommendationModel();
 
-        verify(session.runner(), times(1)).addTarget("train");
-        verify(session.runner(), times(1)).run();
+        verify(runner, times(1)).addTarget("train");
+        verify(runner, times(1)).run();
     }
 
     @Test
     public void testTrainRecommendationModel_Failure() {
-        when(session.runner().addTarget(anyString())).thenReturn(session.runner());
-        when(session.runner().run()).thenThrow(new RuntimeException("Training failed"));
+        when(runner.addTarget(anyString())).thenReturn(runner);
+        when(runner.run()).thenThrow(new RuntimeException("Training failed"));
 
         recommendationService.trainRecommendationModel();
 
-        verify(session.runner(), times(1)).addTarget("train");
-        verify(session.runner(), times(1)).run();
+        verify(runner, times(1)).addTarget("train");
+        verify(runner, times(1)).run();
     }
 }

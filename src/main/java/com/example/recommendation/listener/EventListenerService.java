@@ -6,7 +6,6 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import org.apache.kafka.clients.consumer.ConsumerRecord;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.kafka.annotation.KafkaListener;
 import org.springframework.stereotype.Service;
 
@@ -16,27 +15,20 @@ import java.util.List;
 public class EventListenerService {
     private static final Logger logger = LoggerFactory.getLogger(EventListenerService.class);
 
-    @Autowired
-    private RecommendationService recommendationService;
+    private final RecommendationService recommendationService;
+    private final ObjectMapper objectMapper;
 
-    private final ObjectMapper objectMapper = new ObjectMapper();
+    public EventListenerService(RecommendationService recommendationService, ObjectMapper objectMapper) {
+        this.recommendationService = recommendationService;
+        this.objectMapper = objectMapper;
+    }
 
-    /**
-     * Listens to user activity events from Kafka.
-     *
-     * @param record The Kafka consumer record containing user activity data.
-     */
     @KafkaListener(topics = "user-activity-events", groupId = "recommendation-group")
     public void handleUserActivity(ConsumerRecord<String, String> record) {
         logger.info("Received user activity event: {}", record.value());
         processUserActivity(record.value());
     }
 
-    /**
-     * Processes the user activity event to refine recommendations.
-     *
-     * @param eventData The event data as JSON string.
-     */
     private void processUserActivity(String eventData) {
         try {
             JsonNode eventJson = objectMapper.readTree(eventData);

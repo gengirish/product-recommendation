@@ -5,6 +5,7 @@ import org.apache.kafka.clients.consumer.KafkaConsumer;
 import org.apache.kafka.common.serialization.StringDeserializer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.tensorflow.SavedModelBundle;
@@ -33,6 +34,7 @@ public class RecommendationConfig {
      * Loads the TensorFlow saved model for AI-driven recommendations.
      */
     @Bean
+    @ConditionalOnProperty(name = "tensorflow.model.path", havingValue = "enabled", matchIfMissing = false)
     public SavedModelBundle recommendationModel() {
         logger.info("Loading TensorFlow model for recommendations...");
         return SavedModelBundle.load("models/recommendation_model", "serve");
