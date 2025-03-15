@@ -179,4 +179,60 @@ public class EventListenerServiceTest {
         // Assert
         verify(recommendationService, never()).updateUserPreferences(anyLong(), anyList());
     }
+
+    /**
+     * Tests the {@link EventListenerService#processUserActivity(String)} method.
+     * Verifies that a user activity event is processed correctly for a product click event.
+     */
+    @Test
+    void testProcessUserActivity_UserClickedProduct() throws Exception {
+        String eventData = "{\"userId\": 1, \"eventType\": \"USER_CLICKED_PRODUCT\", \"productId\": 101}";
+        JsonNode eventJson = mock(JsonNode.class);
+        when(objectMapper.readTree(eventData)).thenReturn(eventJson);
+        when(eventJson.get("userId")).thenReturn(mock(JsonNode.class));
+        when(eventJson.get("eventType")).thenReturn(mock(JsonNode.class));
+        when(eventJson.get("productId")).thenReturn(mock(JsonNode.class));
+        when(eventJson.get("userId").asLong()).thenReturn(1L);
+        when(eventJson.get("eventType").asText()).thenReturn("USER_CLICKED_PRODUCT");
+        when(eventJson.get("productId").asLong()).thenReturn(101L);
+
+        eventListenerService.processUserActivity(eventData);
+
+        verify(recommendationService, times(1)).updateUserPreferences(1L, List.of(101L));
+    }
+
+    /**
+     * Tests the {@link EventListenerService#processUserActivity(String)} method.
+     * Verifies that a user activity event is processed correctly for an unknown event type.
+     */
+    @Test
+    void testProcessUserActivity_UnknownEventType() throws Exception {
+        String eventData = "{\"userId\": 4, \"eventType\": \"UNKNOWN_EVENT\", \"productId\": 404}";
+        JsonNode eventJson = mock(JsonNode.class);
+        when(objectMapper.readTree(eventData)).thenReturn(eventJson);
+        when(eventJson.get("userId")).thenReturn(mock(JsonNode.class));
+        when(eventJson.get("eventType")).thenReturn(mock(JsonNode.class));
+        when(eventJson.get("productId")).thenReturn(mock(JsonNode.class));
+        when(eventJson.get("userId").asLong()).thenReturn(4L);
+        when(eventJson.get("eventType").asText()).thenReturn("UNKNOWN_EVENT");
+        when(eventJson.get("productId").asLong()).thenReturn(404L);
+
+        eventListenerService.processUserActivity(eventData);
+
+        verify(recommendationService, never()).updateUserPreferences(anyLong(), anyList());
+    }
+
+    /**
+     * Tests the {@link EventListenerService#processUserActivity(String)} method.
+     * Verifies that an exception during event processing is handled correctly.
+     */
+    @Test
+    void testProcessUserActivity_Exception() throws Exception {
+        String eventData = "invalid-json";
+        when(objectMapper.readTree(eventData)).thenThrow(new RuntimeException("Invalid JSON"));
+
+        eventListenerService.processUserActivity(eventData);
+
+        verify(recommendationService, never()).updateUserPreferences(anyLong(), anyList());
+    }
 }

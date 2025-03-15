@@ -29,7 +29,7 @@ public class EventListenerService {
         processUserActivity(record.value());
     }
 
-    private void processUserActivity(String eventData) {
+    public void processUserActivity(String eventData) {
         try {
             JsonNode eventJson = objectMapper.readTree(eventData);
             Long userId = eventJson.get("userId").asLong();
